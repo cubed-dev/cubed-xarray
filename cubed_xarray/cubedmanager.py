@@ -10,12 +10,9 @@ import numpy as np
 from xarray.core import utils
 from xarray.core.parallelcompat import ChunkManagerEntrypoint
 from xarray.core.pycompat import is_chunked_array, is_duck_dask_array
+from xarray.core.types import T_Chunks, T_NormalizedChunks
 
 T_ChunkedArray = TypeVar("T_ChunkedArray")
-
-# TODO importing TypeAlias is a pain on python 3.9 without typing_extensions in the CI
-# T_Chunks: TypeAlias = tuple[tuple[int, ...], ...]
-T_Chunks = Any
 
 CHUNK_MANAGERS: dict[str, type["ChunkManagerEntrypoint"]] = {}
 
@@ -31,8 +28,20 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
 
         self.array_cls = Array
 
-    def chunks(self, data: "CubedArray") -> T_Chunks:
+    def chunks(self, data: "CubedArray") -> T_NormalizedChunks:
         return data.chunks
+
+    def normalize_chunks(
+        self,
+        chunks: T_Chunks,
+        shape: Union[tuple[int], None] = None,
+        limit: Union[int, None] = None,
+        dtype: Union[np.dtype, None] = None,
+        previous_chunks: T_NormalizedChunks = None,
+    ) -> tuple[tuple[int, ...], ...]:
+        from cubed.vendor.dask.array.core import normalize_chunks
+
+        return normalize_chunks(chunks, shape=shape, limit=limit, dtype=dtype, previous_chunks=previous_chunks)
 
     def from_array(self, data: np.ndarray, chunks, **kwargs) -> "CubedArray":
         from cubed import from_array
@@ -148,7 +157,6 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
         output_sizes=None,
         vectorize=None,
         allow_rechunk=False,
-        meta=None,
         **kwargs,
     ):
         if allow_rechunk:
