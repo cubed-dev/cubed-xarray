@@ -26,7 +26,8 @@ Xarray objects backed by cubed arrays can be created either by:
 2. Calling `.chunk` on xarray objects,
 3. Passing a `chunks` argument to `xarray.open_dataset`.
 
-In (2) and (3) the choice to use `cubed.Array` instead of `dask.array.Array` is made by passing the keyword argument `manager='cubed'`.
+In (2) and (3) the choice to use `cubed.Array` instead of `dask.array.Array` is made by passing the keyword argument `chunked_array_type='cubed'`.
+To pass arguments to the constructor of `cubed.Array` then pass them via the dictionary `from_array_kwargs`, e.g. `from_array_kwargs={'spec': cubed.Spec(max_mem=2_000_000)}`.
 
 If cubed and cubed-xarray are installed but dask is not, then specifying the parallel array type to use is not necessary.
 
