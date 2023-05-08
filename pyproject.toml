@@ -27,7 +27,7 @@ dependencies = [
     "xarray >= 0.16.1",
     "cubed >= 0.6.0",
 ]
-dynamic = ["version"]
+dynamic = ["version"m "entry-points"]
 
 [project.urls]
 Home = "https://github.com/xarray-contrib/cubed-xarray"
