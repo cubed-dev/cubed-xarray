@@ -4,8 +4,6 @@ version = "0.0.1"
 authors = [
     {name = "Tom Nicholas", email = "tomnicholas1@googlemail.com"}
 ]
-url = "https://github.com/xarray-contrib/cubed-xarray/"
-download_url = "https://github.com/xarray-contrib/cubed-xarray/archive/refs/tags/v0.0.1.tar.gz"
 description = "Interface for using cubed with xarray for parallel computation."
 license = {text = "Apache-2"}
 readme = "README.md"
@@ -29,8 +27,9 @@ dependencies = [
 ]
 
 [project.urls]
-Home = "https://github.com/xarray-contrib/cubed-xarray"
-Documentation = "https://github.com/xarray-contrib/cubed-xarray#readme"
+homepage = "https://github.com/xarray-contrib/cubed-xarray"
+documentation = "https://github.com/xarray-contrib/cubed-xarray#readme"
+repository = "https://github.com/xarray-contrib/cubed-xarray"
 
 [tool.setuptools.packages.find]
 include = [
