@@ -27,7 +27,6 @@ dependencies = [
     "xarray >= 0.16.1",
     "cubed >= 0.6.0",
 ]
-dynamic = ["version", "entry-points"]
 
 [project.urls]
 Home = "https://github.com/xarray-contrib/cubed-xarray"
@@ -38,6 +37,9 @@ include = [
     "cubed_xarray",
     "cubed_xarray.tests",
 ]
+
+[project.entry-points."xarray.chunkmanagers"]
+cubed = "cubed_xarray.cubedmanager:CubedManager"
 
 [build-system]
 requires = ["setuptools >= 64", "setuptools_scm >= 7.0"]
