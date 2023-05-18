@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import sys
 from abc import ABC, abstractmethod
@@ -10,20 +12,17 @@ import numpy as np
 from xarray.core import utils
 from xarray.core.parallelcompat import ChunkManagerEntrypoint
 from xarray.core.pycompat import is_chunked_array, is_duck_dask_array
-from xarray.core.types import T_Chunks, T_NormalizedChunks
 
-T_ChunkedArray = TypeVar("T_ChunkedArray")
-
-CHUNK_MANAGERS: dict[str, type["ChunkManagerEntrypoint"]] = {}
 
 if TYPE_CHECKING:
-    from xarray.core.types import CubedArray, ZarrArray
+    from xarray.core.types import T_Chunks, T_NormalizedChunks
+    from cubed import Array as CubedArray
 
 
 class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
     array_cls: type["CubedArray"]
 
-    def __init__(self):
+    def __init__(self) -> None:
         from cubed import Array
 
         self.array_cls = Array
@@ -33,15 +32,21 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
 
     def normalize_chunks(
         self,
-        chunks: T_Chunks,
-        shape: Union[tuple[int], None] = None,
-        limit: Union[int, None] = None,
-        dtype: Union[np.dtype, None] = None,
-        previous_chunks: T_NormalizedChunks = None,
-    ) -> tuple[tuple[int, ...], ...]:
+        chunks: T_Chunks | T_NormalizedChunks,
+        shape: tuple[int, ...] | None = None,
+        limit: int | None = None,
+        dtype: np.dtype | None = None,
+        previous_chunks: T_NormalizedChunks | None = None,
+    ) -> T_NormalizedChunks:
         from cubed.vendor.dask.array.core import normalize_chunks
 
-        return normalize_chunks(chunks, shape=shape, limit=limit, dtype=dtype, previous_chunks=previous_chunks)
+        return normalize_chunks(
+            chunks,
+            shape=shape,
+            limit=limit,
+            dtype=dtype,
+            previous_chunks=previous_chunks,
+        )
 
     def from_array(self, data: np.ndarray, chunks, **kwargs) -> "CubedArray":
         from cubed import from_array
@@ -58,10 +63,7 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
             spec=spec,
         )
 
-    def rechunk(self, data: "CubedArray", chunks, **kwargs) -> "CubedArray":
-        return data.rechunk(chunks, **kwargs)
-
-    def compute(self, *data: "CubedArray", **kwargs) -> np.ndarray:
+    def compute(self, *data: "CubedArray", **kwargs) -> tuple[np.ndarray, ...]:
         from cubed import compute
 
         return compute(*data, **kwargs)
@@ -74,14 +76,14 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
 
     def reduction(
         self,
-        arr: T_ChunkedArray,
+        arr: "CubedArray",
         func: Callable,
-        combine_func: Optional[Callable] = None,
-        aggregate_func: Optional[Callable] = None,
-        axis: Optional[Union[int, Sequence[int]]] = None,
-        dtype: Optional[np.dtype] = None,
+        combine_func: Callable | None = None,
+        aggregate_func: Callable | None = None,
+        axis: int | Sequence[int] | None = None,
+        dtype: np.dtype | None = None,
         keepdims: bool = False,
-    ) -> T_ChunkedArray:
+    ) -> "CubedArray":
         from cubed.core.ops import reduction
 
         return reduction(
@@ -96,15 +98,20 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
 
     def map_blocks(
         self,
-        func,
-        *args,
-        dtype=None,
-        chunks=None,
-        drop_axis=[],
-        new_axis=None,
+        func: Callable,
+        *args: Any,
+        dtype: np.typing.DTypeLike | None = None,
+        chunks: tuple[int, ...] | None = None,
+        drop_axis: int | Sequence[int] | None = None,
+        new_axis: int | Sequence[int] | None = None,
         **kwargs,
     ):
         from cubed.core.ops import map_blocks
+
+        if drop_axis is None:
+            # TODO should fix this upstream in cubed to match dask
+            # see https://github.com/pydata/xarray/pull/7019#discussion_r1196729489
+            drop_axis = []
 
         return map_blocks(
             func,
@@ -118,14 +125,14 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
 
     def blockwise(
         self,
-        func,
-        out_ind,
+        func: Callable,
+        out_ind: Iterable,
         *args: Any,
         # can't type this as mypy assumes args are all same type, but blockwise args alternate types
-        dtype=None,
-        adjust_chunks=None,
-        new_axes=None,
-        align_arrays=True,
+        dtype: np.dtype | None = None,
+        adjust_chunks: dict[Any, Callable] | None = None,
+        new_axes: dict[Any, int] | None = None,
+        align_arrays: bool = True,
         target_store=None,
         **kwargs,
     ):
@@ -147,16 +154,16 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
 
     def apply_gufunc(
         self,
-        func,
-        signature,
-        *args,
-        axes=None,
-        axis=None,
-        keepdims=False,
-        output_dtypes=None,
-        output_sizes=None,
-        vectorize=None,
-        allow_rechunk=False,
+        func: Callable,
+        signature: str,
+        *args: Any,
+        axes: Sequence[tuple[int, ...]] | None = None,
+        axis: int | None = None,
+        keepdims: bool = False,
+        output_dtypes: Sequence[np.typing.DTypeLike] | None = None,
+        output_sizes: dict[str, int] | None = None,
+        vectorize: bool | None = None,
+        allow_rechunk: bool = False,
         **kwargs,
     ):
         if allow_rechunk:
@@ -181,8 +188,10 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
         )
 
     def unify_chunks(
-        self, *args, **kwargs
-    ) -> tuple[dict[str, T_Chunks], list["CubedArray"]]:
+        self,
+        *args: Any,  # can't type this as mypy assumes args are all same type, but dask unify_chunks args alternate types
+        **kwargs,
+    ) -> tuple[dict[str, T_NormalizedChunks], list["CubedArray"]]:
         from cubed.core import unify_chunks
 
         return unify_chunks(*args, **kwargs)
@@ -190,8 +199,8 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
     def store(
         self,
         sources: Union["CubedArray", Sequence["CubedArray"]],
-        targets: Union["ZarrArray", Sequence["ZarrArray"]],
-        **kwargs: dict[str, Any],
+        targets: Any,
+        **kwargs,
     ):
         """Used when writing to any backend."""
         from cubed.core.ops import store
