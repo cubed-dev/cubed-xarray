@@ -31,6 +31,16 @@ To pass arguments to the constructor of `cubed.Array` then pass them via the dic
 If cubed and cubed-xarray are installed but dask is not, then specifying the parallel array type to use is not necessary, 
 as the entrypoints system will then default to the only chunked parallel backend available (i.e. cubed).
 
+## Sharp Edges 🔪
+
+Some things almost certainly won't work yet:
+- Certain operations called in xarray but not implemented in cubed, for instance `pad` (see https://github.com/tomwhite/cubed/issues/193)
+- Using `parallel=True` with `xr.open_mfdataset` won't work because cubed doesn't implement a version of `dask.Delayed` (see https://github.com/pydata/xarray/issues/7810)
+
+and some other things _might_ work but have not yet been tried:
+- Groupby
+- Saving to formats other than zarr
+
 ## Tests
 
 Integration tests for wrapping cubed with xarray also live in this repository.
