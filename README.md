@@ -11,11 +11,17 @@ Interface for using [cubed](https://github.com/tomwhite/cubed) with [xarray](htt
 
 ## Installation
 
-Install via pip.
+Install via pip 
+
+`pip install cubed-xarray`
+
+or conda
+
+`conda install -c conda-forge cubed-xarray`
 
 ## Importing
 
-You don't need to import this package in user code. Once `pip install`-ed, xarray should automatically become aware of this package via the magic of entrypoints.
+You don't need to import this package in user code. Once poperly installed, xarray should automatically become aware of this package via the magic of entrypoints.
 
 ## Usage
 
@@ -26,9 +32,9 @@ Xarray objects backed by cubed arrays can be created either by:
 3. Passing a `chunks` argument to `xarray.open_dataset`.
 
 In (2) and (3) the choice to use `cubed.Array` instead of `dask.array.Array` is made by passing the keyword argument `chunked_array_type='cubed'`.
-To pass arguments to the constructor of `cubed.Array` then pass them via the dictionary `from_array_kwargs`, e.g. `from_array_kwargs={'spec': cubed.Spec(max_mem=2_000_000)}`.
+To pass arguments to the constructor of `cubed.Array` you should pass them via the dictionary `from_array_kwargs`, e.g. `from_array_kwargs={'spec': cubed.Spec(allowed_mem='2GB')}`.
 
-If cubed and cubed-xarray are installed but dask is not, then specifying the parallel array type to use is not necessary, 
+If cubed and cubed-xarray are installed but dask is not, then specifying `chunked_array_type` is not necessary, 
 as the entrypoints system will then default to the only chunked parallel backend available (i.e. cubed).
 
 ## Sharp Edges 🔪
@@ -41,6 +47,8 @@ Some things almost certainly won't work yet:
 and some other things _might_ work but have not yet been tried:
 - Groupby
 - Saving to formats other than zarr
+
+In general a bug could take the form of an error, or of a silent attempt to coerce the array type to numpy by immediately computing the underlying array.
 
 ## Tests
 
