@@ -35,6 +35,7 @@ as the entrypoints system will then default to the only chunked parallel backend
 
 Some things almost certainly won't work yet:
 - Certain operations called in xarray but not implemented in cubed, for instance `pad` (see https://github.com/tomwhite/cubed/issues/193)
+- Array operations involving NaNs - for now use `skipna=True` to avoid eager loading (see https://github.com/pydata/xarray/issues/7243)
 - Using `parallel=True` with `xr.open_mfdataset` won't work because cubed doesn't implement a version of `dask.Delayed` (see https://github.com/pydata/xarray/issues/7810)
 
 and some other things _might_ work but have not yet been tried:
