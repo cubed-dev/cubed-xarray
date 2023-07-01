@@ -44,6 +44,7 @@ Some things almost certainly won't work yet:
 - Array operations involving NaNs - for now use `skipna=True` to avoid eager loading (see https://github.com/pydata/xarray/issues/7243)
 - Using `parallel=True` with `xr.open_mfdataset` won't work because cubed doesn't implement a version of `dask.Delayed` (see https://github.com/pydata/xarray/issues/7810)
 - Groupby (see https://github.com/tomwhite/cubed/issues/223 and https://github.com/xarray-contrib/flox/issues/224)
+- `xarray.map_blocks` does not actually dispatch to `cubed.map_blocks` yet, and will always use Dask.
 
 and some other things _might_ work but have not yet been tried:
 
