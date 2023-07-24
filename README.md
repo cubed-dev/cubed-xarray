@@ -45,6 +45,7 @@ Some things almost certainly won't work yet:
 - Using `parallel=True` with `xr.open_mfdataset` won't work because cubed doesn't implement a version of `dask.Delayed` (see https://github.com/pydata/xarray/issues/7810)
 - Groupby (see https://github.com/tomwhite/cubed/issues/223 and https://github.com/xarray-contrib/flox/issues/224)
 - `xarray.map_blocks` does not actually dispatch to `cubed.map_blocks` yet, and will always use Dask.
+- Certain operations using `cumreduction` (e.g. `ffill` and `bfill`) are [not hooked up to the `ChunkManager` yet](https://github.com/tomwhite/cubed/issues/277#issuecomment-1648567431), so will attempt to call dask.
 
 and some other things _might_ work but have not yet been tried:
 
