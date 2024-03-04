@@ -1,19 +1,13 @@
 from __future__ import annotations
 
-import functools
-import sys
-from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from importlib.metadata import entry_points
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, Union, Tuple, List
+from typing import TYPE_CHECKING, Any, Callable, Union
 
 import numpy as np
 
 from tlz import partition
 
-from xarray.core import utils
 from xarray.namedarray.parallelcompat import ChunkManagerEntrypoint
-from xarray.namedarray.pycompat import is_chunked_array, is_duck_dask_array
 
 
 if TYPE_CHECKING:
