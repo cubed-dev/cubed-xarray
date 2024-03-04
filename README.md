@@ -2,12 +2,12 @@ Note: this is a proof-of-concept, and many things are incomplete, untested, or d
 
 # cubed-xarray
 
-Interface for using [cubed](https://github.com/tomwhite/cubed) with [xarray](https://github.com/pydata/xarray).
+Interface for using [cubed](https://github.com/cubed-dev/cubed) with [xarray](https://github.com/pydata/xarray).
 
 ## Requirements
 
 - Cubed version >=0.6.3
-- Xarray version >=2023.05.0
+- Xarray version >=2024.02.0
 
 ## Installation
 
