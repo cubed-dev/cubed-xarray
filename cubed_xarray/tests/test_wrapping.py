@@ -1,5 +1,5 @@
 import xarray as xr
-from xarray.core.parallelcompat import list_chunkmanagers
+from xarray.namedarray.parallelcompat import list_chunkmanagers
 import cubed
 
 from cubed_xarray.cubedmanager import CubedManager

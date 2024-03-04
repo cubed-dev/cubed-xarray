@@ -12,8 +12,8 @@ import numpy as np
 from tlz import partition
 
 from xarray.core import utils
-from xarray.core.parallelcompat import ChunkManagerEntrypoint
-from xarray.core.pycompat import is_chunked_array, is_duck_dask_array
+from xarray.namedarray.parallelcompat import ChunkManagerEntrypoint
+from xarray.namedarray.pycompat import is_chunked_array, is_duck_dask_array
 
 
 if TYPE_CHECKING:
