@@ -86,7 +86,7 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
             arr,
             func=func,
             combine_func=combine_func,
-            aggegrate_func=aggregate_func,  # TODO fix the typo in argument name in cubed
+            aggregate_func=aggregate_func,
             axis=axis,
             dtype=dtype,
             keepdims=keepdims,

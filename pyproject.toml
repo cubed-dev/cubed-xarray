@@ -23,7 +23,7 @@ requires-python = ">=3.9"
 dependencies = [
     "numpy >= 1.17",
     "xarray >= 2024.02.0",
-    "cubed >= 0.6.3",
+    "cubed >= 0.14.2",
 ]
 
 [project.urls]
