@@ -104,11 +104,6 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
     ):
         from cubed.core.ops import map_blocks
 
-        if drop_axis is None:
-            # TODO should fix this upstream in cubed to match dask
-            # see https://github.com/pydata/xarray/pull/7019#discussion_r1196729489
-            drop_axis = []
-
         return map_blocks(
             func,
             *args,
