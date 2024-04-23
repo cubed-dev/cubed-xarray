@@ -86,7 +86,7 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
             arr,
             func=func,
             combine_func=combine_func,
-            aggegrate_func=aggregate_func,  # TODO fix the typo in argument name in cubed
+            aggregate_func=aggregate_func,
             axis=axis,
             dtype=dtype,
             keepdims=keepdims,
@@ -103,11 +103,6 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
         **kwargs,
     ):
         from cubed.core.ops import map_blocks
-
-        if drop_axis is None:
-            # TODO should fix this upstream in cubed to match dask
-            # see https://github.com/pydata/xarray/pull/7019#discussion_r1196729489
-            drop_axis = []
 
         return map_blocks(
             func,
