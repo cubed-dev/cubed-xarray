@@ -1,6 +1,6 @@
 [project]
 name = "cubed-xarray"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
     {name = "Tom Nicholas", email = "tomnicholas1@googlemail.com"}
 ]

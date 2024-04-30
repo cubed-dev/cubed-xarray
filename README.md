@@ -6,7 +6,7 @@ Interface for using [cubed](https://github.com/cubed-dev/cubed) with [xarray](ht
 
 ## Requirements
 
-- Cubed version >=0.6.3
+- Cubed version >=0.14.2
 - Xarray version >=2024.02.0
 
 ## Installation
