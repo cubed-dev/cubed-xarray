@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+    - 'docs/**'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+    - 'docs/**'
+  schedule: # every day at noon
+    - cron: "0 12 * * *"
+env:
+  UV_HTTP_TIMEOUT: 500
+
+jobs:
+
+  test:
+    name: ${{ matrix.python-version }}-build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      matrix:
+        python-version: ["3.09", "3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv venv .venv
+          echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+
+      - name: Install cubed-xarray
+        run: |
+           uv pip install --system '.'
+           uv pip install --system '.[test]'
+
+      - name: Running Tests
+        run: |
+          python -m pytest .
