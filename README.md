@@ -11,7 +11,7 @@ Interface for using [cubed](https://github.com/cubed-dev/cubed) with [xarray](ht
 
 ## Installation
 
-Install via pip 
+Install via pip
 
 `pip install cubed-xarray`
 
@@ -34,7 +34,7 @@ Xarray objects backed by cubed arrays can be created either by:
 In (2) and (3) the choice to use `cubed.Array` instead of `dask.array.Array` is made by passing the keyword argument `chunked_array_type='cubed'`.
 To pass arguments to the constructor of `cubed.Array` you should pass them via the dictionary `from_array_kwargs`, e.g. `from_array_kwargs={'spec': cubed.Spec(allowed_mem='2GB')}`.
 
-If cubed and cubed-xarray are installed but dask is not, then specifying `chunked_array_type` is not necessary, 
+If cubed and cubed-xarray are installed but dask is not, then specifying `chunked_array_type` is not necessary,
 as the entrypoints system will then default to the only chunked parallel backend available (i.e. cubed).
 
 ## Sharp Edges 🔪
