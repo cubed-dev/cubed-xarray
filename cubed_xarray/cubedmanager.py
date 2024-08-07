@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Callable, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Union
 
 import numpy as np
-
 from tlz import partition
-
 from xarray.namedarray.parallelcompat import ChunkManagerEntrypoint
 
-
 if TYPE_CHECKING:
-    from xarray.core.types import T_Chunks, T_NormalizedChunks
     from cubed import Array as CubedArray
+    from xarray.core.types import T_Chunks, T_NormalizedChunks
 
 
 class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
@@ -203,6 +200,27 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
     ):
         """Used when writing to any backend."""
         from cubed.core.ops import store
+
+        compute = kwargs.pop("compute", True)
+        if not compute:
+            raise NotImplementedError("Delayed compute is not supported.")
+
+        lock = kwargs.pop("lock", None)
+        if lock:
+            raise NotImplementedError("Locking is not supported.")
+
+        regions = kwargs.pop("regions", None)
+        if regions:
+            # regions is either a tuple of slices or a collection of tuples of slices
+            if isinstance(regions, tuple):
+                regions = [regions]
+            for t in regions:
+                if not all(r == slice(None) for r in t):
+                    raise NotImplementedError(
+                        "Only whole slices are supported for regions."
+                    )
+
+        kwargs.pop("flush", None)  # not used
 
         return store(
             sources,
