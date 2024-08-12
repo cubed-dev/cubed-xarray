@@ -30,11 +30,13 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+    "dill",
     "pre-commit",
     "ruff",
     "pytest-mypy",
     "pytest-cov",
-    "pytest"]
+    "pytest",
+]
 
 
 [project.urls]
