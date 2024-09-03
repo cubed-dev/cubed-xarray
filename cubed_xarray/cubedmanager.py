@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Union
 
 import numpy as np
+import xarray as xr
 from tlz import partition
 from xarray.namedarray.parallelcompat import ChunkManagerEntrypoint
 
@@ -226,4 +227,29 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
             sources,
             targets,
             **kwargs,
+        )
+
+
+@xr.register_dataset_accessor("cubed")
+class DatasetAccessor:
+    def __init__(self, ds):
+        self.ds = ds
+
+    def visualize(
+        self,
+        filename="cubed",
+        format=None,
+        optimize_graph=True,
+        optimize_function=None,
+        show_hidden=False,
+    ):
+        import cubed
+
+        cubed.visualize(
+            *(self.ds[var].data for var in self.ds.data_vars.keys()),
+            filename=filename,
+            format=format,
+            optimize_graph=optimize_graph,
+            optimize_function=optimize_function,
+            show_hidden=show_hidden,
         )
