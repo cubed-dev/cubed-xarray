@@ -30,6 +30,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+    "cubed[diagnostics]",
     "dill",
     "pre-commit",
     "ruff",

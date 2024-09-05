@@ -61,3 +61,14 @@ def test_to_zarr(tmpdir, executor):
         assert isinstance(restored.var1.data, cubed.Array)
         computed = restored.compute()
         assert_allclose(original, computed)
+
+
+def test_dataset_accessor_visualize(tmp_path):
+    spec = cubed.Spec(allowed_mem="200MB")
+
+    ds = create_test_data().chunk(
+        chunked_array_type="cubed", from_array_kwargs={"spec": spec}
+    )
+    assert not (tmp_path / "cubed.svg").exists()
+    ds.cubed.visualize(filename=tmp_path / "cubed")
+    assert (tmp_path / "cubed.svg").exists()
