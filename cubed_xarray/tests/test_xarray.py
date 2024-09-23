@@ -86,9 +86,6 @@ class TestVariable(CubedTestCase):
         self.assertLazyAndIdentical(self.eager_var, self.lazy_var.copy())
         self.assertLazyAndIdentical(self.eager_var, self.lazy_var.copy(deep=True))
 
-    @pytest.mark.xfail(
-        reason="cubed rechunk handles chunks={} incorrectly, see https://github.com/cubed-dev/cubed/pull/546"
-    )
     def test_chunk(self):
         for chunks, expected in [
             ({}, ((2, 2), (2, 2, 2))),
@@ -151,7 +148,7 @@ class TestVariable(CubedTestCase):
         v = self.lazy_var
         self.assertLazyAndIdentical(-u, -v)
         self.assertLazyAndIdentical(abs(u), abs(v))
-        # self.assertLazyAndIdentical(u.round(), v.round())  # TODO: fails, see https://github.com/pydata/xarray/pull/9326
+        self.assertLazyAndIdentical(u.round(), v.round())
 
     def test_binary_op(self):
         u = self.eager_var
@@ -292,9 +289,6 @@ class TestDataArrayAndDataset(CubedTestCase):
             self.data, coords={"x": range(4)}, dims=("x", "y"), name="foo"
         )
 
-    @pytest.mark.xfail(
-        reason="cubed rechunk handles chunks={} incorrectly, see https://github.com/cubed-dev/cubed/pull/546"
-    )
     def test_chunk(self) -> None:
         for chunks, expected in [
             ({}, ((2, 2), (2, 2, 2))),
