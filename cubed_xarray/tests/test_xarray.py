@@ -86,9 +86,6 @@ class TestVariable(CubedTestCase):
         self.assertLazyAndIdentical(self.eager_var, self.lazy_var.copy())
         self.assertLazyAndIdentical(self.eager_var, self.lazy_var.copy(deep=True))
 
-    @pytest.mark.xfail(
-        reason="cubed rechunk handles chunks={} incorrectly, see https://github.com/cubed-dev/cubed/pull/546"
-    )
     def test_chunk(self):
         for chunks, expected in [
             ({}, ((2, 2), (2, 2, 2))),
@@ -292,9 +289,6 @@ class TestDataArrayAndDataset(CubedTestCase):
             self.data, coords={"x": range(4)}, dims=("x", "y"), name="foo"
         )
 
-    @pytest.mark.xfail(
-        reason="cubed rechunk handles chunks={} incorrectly, see https://github.com/cubed-dev/cubed/pull/546"
-    )
     def test_chunk(self) -> None:
         for chunks, expected in [
             ({}, ((2, 2), (2, 2, 2))),
