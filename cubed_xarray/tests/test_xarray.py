@@ -178,7 +178,6 @@ class TestVariable(CubedTestCase):
         )
         assert expected == repr(self.lazy_var)
 
-    @pytest.mark.xfail(reason="duck array ops problem in xarray")
     def test_pickle(self):
         # Test that pickling/unpickling does not convert the cubed
         # backend to numpy
@@ -324,7 +323,6 @@ class TestDataArrayAndDataset(CubedTestCase):
 
             assert rechunked.chunksizes == expected_chunksizes
 
-    @pytest.mark.xfail(reason="cubed rechunk bug")
     def test_rechunk(self):
         chunked = self.eager_array.chunk({"x": 2}).chunk(
             {"y": 2}, chunked_array_type="cubed"
@@ -456,7 +454,6 @@ class TestDataArrayAndDataset(CubedTestCase):
         assert chunked_array.chunks == ((2, 2), (2, 2))
         assert chunked_array.chunksizes == {"x": (2, 2)}
 
-    @pytest.mark.xfail(reason="duck array ops problem in xarray")
     def test_stack(self):
         data = cubed.random.random(size=(2, 3, 4), chunks=(1, 3, 4))
         arr = DataArray(data, dims=("w", "x", "y"))
