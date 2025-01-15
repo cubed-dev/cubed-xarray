@@ -127,9 +127,7 @@ class TestVariable(CubedTestCase):
         v = self.lazy_var
         self.assertLazyAndIdentical(u.T, v.T)
 
-    @pytest.mark.xfail(
-        reason="xarray uses np.pad which is not yet wired up to cubed.pad"
-    )
+    @pytest.mark.xfail(reason="needs pad mode='constant_values' in cubed")
     def test_shift(self):
         u = self.eager_var
         v = self.lazy_var
@@ -193,10 +191,8 @@ class TestVariable(CubedTestCase):
     def test_reduce(self):
         u = self.eager_var
         v = self.lazy_var
-        # TODO: remove skipna=False (https://github.com/cubed-dev/cubed/issues/153)
-        self.assertLazyAndAllClose(u.mean(skipna=False), v.mean(skipna=False))
+        self.assertLazyAndAllClose(u.mean(), v.mean())
         # TODO: other reduce functions need work
-        # self.assertLazyAndAllClose(u.mean(), v.mean())
         # self.assertLazyAndAllClose(u.std(), v.std())
         # with raise_if_cubed_computes():
         #     actual = v.argmax(dim="x")
@@ -345,7 +341,7 @@ class TestDataArrayAndDataset(CubedTestCase):
         self.assertLazyAndAllClose(u, v)
         self.assertLazyAndAllClose(-u, -v)
         self.assertLazyAndAllClose(u.T, v.T)
-        # self.assertLazyAndAllClose(u.mean(), v.mean())  # TODO: isn't lazy
+        self.assertLazyAndAllClose(u.mean(), v.mean())
         self.assertLazyAndAllClose(1 + u, 1 + v)
 
         actual = xr.concat([v[:2], v[2:]], "x")
@@ -362,7 +358,6 @@ class TestDataArrayAndDataset(CubedTestCase):
 
         assert ((u + 1).data == v2.data).all()
 
-    @pytest.mark.xfail(reason="isn't lazy")
     def test_groupby(self):
         u = self.eager_array
         v = self.lazy_array
@@ -372,7 +367,7 @@ class TestDataArrayAndDataset(CubedTestCase):
             actual = v.groupby("x").mean(...)
         self.assertLazyAndAllClose(expected, actual)
 
-    @pytest.mark.xfail(reason="isn't lazy")
+    @pytest.mark.xfail(reason="needs pad mode='constant_values' in cubed")
     def test_rolling(self):
         u = self.eager_array
         v = self.lazy_array
