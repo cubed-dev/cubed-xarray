@@ -47,6 +47,7 @@ jobs:
         run: |
            uv pip install --system '.'
            uv pip install --system '.[test]'
+           uv pip install --system 'cubed @ git+https://github.com/cubed-dev/cubed.git' 'xarray @ git+https://github.com/pydata/xarray.git'
 
       - name: Running Tests
         run: |
