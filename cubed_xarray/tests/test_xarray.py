@@ -396,7 +396,6 @@ class TestDataArrayAndDataset(CubedTestCase):
             actual = method(v.groupby("ab"))
         self.assertLazyAndAllClose(expected, actual)
 
-    @pytest.mark.xfail(reason="isn't lazy")
     def test_reindex(self):
         u = self.eager_array.assign_coords(y=range(6))
         v = self.lazy_array.assign_coords(y=range(6))
