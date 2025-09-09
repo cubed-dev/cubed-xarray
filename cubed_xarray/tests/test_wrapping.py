@@ -1,6 +1,7 @@
 import sys
 
 import cubed
+import numpy as np
 import pytest
 import xarray as xr
 from cubed.runtime.create import create_executor
@@ -73,6 +74,29 @@ def test_to_zarr(tmpdir, executor):
         assert isinstance(restored.var1.data, cubed.Array)
         computed = restored.compute()
         assert_allclose(original, computed)
+
+
+# based on test_write_region
+def test_write_region(tmpdir):
+    zeros = xr.Dataset({"u": (("x",), np.zeros(10))}).chunk(
+        2, chunked_array_type="cubed"
+    )
+    nonzeros = xr.Dataset({"u": (("x",), np.arange(1, 11))}).chunk(
+        2, chunked_array_type="cubed"
+    )
+
+    store = tmpdir / "out.zarr"
+    zeros.to_zarr(
+        store,
+        encoding={"u": dict(chunks=2)},
+    )
+    with xr.open_zarr(store) as actual:
+        assert_identical(actual, zeros)
+    for i in range(0, 10, 2):
+        region = {"x": slice(i, i + 2)}
+        nonzeros.isel(region).to_zarr(store, region=region)
+    with xr.open_zarr(store) as actual:
+        assert_identical(actual, nonzeros)
 
 
 def test_dataset_accessor_visualize(tmp_path):
