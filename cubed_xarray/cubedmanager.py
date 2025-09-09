@@ -210,23 +210,12 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
         if lock:
             raise NotImplementedError("Locking is not supported.")
 
-        regions = kwargs.pop("regions", None)
-        if regions:
-            # regions is either a tuple of slices or a collection of tuples of slices
-            if isinstance(regions, tuple):
-                regions = [regions]
-            for t in regions:
-                if not all(r == slice(None) for r in t):
-                    raise NotImplementedError(
-                        "Only whole slices are supported for regions."
-                    )
-
         kwargs.pop("flush", None)  # not used
 
         return store(
             sources,
             targets,
-            **kwargs,
+            **kwargs,  # regions passed through here
         )
 
 
