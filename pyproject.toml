@@ -1,6 +1,6 @@
 [project]
 name = "cubed-xarray"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
     {name = "Tom Nicholas", email = "tomnicholas1@googlemail.com"}
 ]
@@ -23,7 +23,7 @@ requires-python = ">=3.10"
 dependencies = [
     "numpy >= 1.22",
     "xarray >= 2024.09.0",
-    "cubed >= 0.17.0",
+    "cubed >= 0.23.0",
 ]
 
 
