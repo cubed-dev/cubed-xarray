@@ -234,7 +234,7 @@ class DatasetAccessor:
     ):
         import cubed
 
-        cubed.visualize(
+        return cubed.visualize(
             *(self.ds[var].data for var in self.ds.data_vars.keys()),
             filename=filename,
             format=format,
