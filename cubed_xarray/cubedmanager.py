@@ -155,13 +155,6 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
         allow_rechunk: bool = False,
         **kwargs,
     ):
-        if allow_rechunk:
-            raise NotImplementedError(
-                "cubed.apply_gufunc doesn't support allow_rechunk"
-            )
-        if keepdims:
-            raise NotImplementedError("cubed.apply_gufunc doesn't support keepdims")
-
         from cubed import apply_gufunc
 
         return apply_gufunc(
@@ -170,9 +163,11 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
             *args,
             axes=axes,
             axis=axis,
+            keepdims=keepdims,
             output_dtypes=output_dtypes,
             output_sizes=output_sizes,
             vectorize=vectorize,
+            allow_rechunk=allow_rechunk,
             **kwargs,
         )
 
