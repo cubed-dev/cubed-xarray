@@ -214,6 +214,31 @@ class CubedManager(ChunkManagerEntrypoint["CubedArray"]):
         )
 
 
+@xr.register_dataarray_accessor("cubed")
+class DataArrayAccessor:
+    def __init__(self, da):
+        self.da = da
+
+    def visualize(
+        self,
+        filename="cubed",
+        format=None,
+        optimize_graph=True,
+        optimize_function=None,
+        show_hidden=False,
+    ):
+        import cubed
+
+        return cubed.visualize(
+            self.da.data,
+            filename=filename,
+            format=format,
+            optimize_graph=optimize_graph,
+            optimize_function=optimize_function,
+            show_hidden=show_hidden,
+        )
+
+
 @xr.register_dataset_accessor("cubed")
 class DatasetAccessor:
     def __init__(self, ds):
