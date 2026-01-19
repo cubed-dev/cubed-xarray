@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import xarray as xr
+from cubed import raise_if_computes as raise_if_cubed_computes
 from xarray import DataArray, Dataset, Variable
 from xarray.tests import (
     assert_allclose,
@@ -22,15 +23,7 @@ from xarray.tests import (
     mock,
 )
 
-try:
-    from cubed.testing import raise_if_computes as raise_if_cubed_computes
-except ImportError:
-    from contextlib import nullcontext
 
-    raise_if_cubed_computes = nullcontext
-
-
-@pytest.mark.xfail(reason="needs https://github.com/cubed-dev/cubed/pull/545")
 def test_raise_if_cubed_computes():
     data = cubed.from_array(np.random.RandomState(0).randn(4, 6), chunks=(2, 2))
     with pytest.raises(RuntimeError, match=r"'compute' was called"):
