@@ -1,5 +1,3 @@
-import sys
-
 import cubed
 import numpy as np
 import pytest
@@ -11,10 +9,7 @@ from xarray.tests import assert_allclose, create_test_data
 
 from cubed_xarray.cubedmanager import CubedManager
 
-EXECUTORS = [create_executor("single-threaded")]
-
-if sys.version_info >= (3, 11):
-    EXECUTORS.append(create_executor("processes"))
+EXECUTORS = [create_executor("single-threaded"), create_executor("processes")]
 
 
 @pytest.fixture(
