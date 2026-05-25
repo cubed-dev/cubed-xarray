@@ -189,19 +189,17 @@ class TestVariable(CubedTestCase):
         self.assertLazyAndAllClose((u < 1).all("x"), (v < 1).all("x"))
         with raise_if_cubed_computes():
             v.reduce(duck_array_ops.mean)
-        # TODO: std, argmax, argmin compute eagerly (not lazy) in cubed
-        # self.assertLazyAndAllClose(u.std(), v.std())
-        # with raise_if_cubed_computes():
-        #     actual = v.argmax(dim="x")
-        # self.assertLazyAndAllClose(u.argmax(dim="x"), actual)
-        # with raise_if_cubed_computes():
-        #     actual = v.argmin(dim="x")
-        # self.assertLazyAndAllClose(u.argmin(dim="x"), actual)
-        # TODO: median no longer raises NotImplementedError in xarray
-        # with pytest.raises(NotImplementedError, match=r"only works along an axis"):
-        #     v.median()
-        # with pytest.raises(NotImplementedError, match=r"only works along an axis"):
-        #     v.median(v.dims)
+        self.assertLazyAndAllClose(u.std(), v.std())
+        with raise_if_cubed_computes():
+            actual = v.argmax(dim="x")
+        self.assertLazyAndAllClose(u.argmax(dim="x"), actual)
+        with raise_if_cubed_computes():
+            actual = v.argmin(dim="x")
+        self.assertLazyAndAllClose(u.argmin(dim="x"), actual)
+        with pytest.raises(NotImplementedError, match=r"median is not supported"):
+            v.median()
+        with pytest.raises(NotImplementedError, match=r"median is not supported"):
+            v.median(v.dims)
 
     def test_missing_values(self):
         values = np.array([0, 1, np.nan, 3])
@@ -218,9 +216,9 @@ class TestVariable(CubedTestCase):
         v = self.lazy_var
         self.assertLazyAndIdentical(u, Variable.concat([v[:2], v[2:]], "x"))
         self.assertLazyAndIdentical(u[:2], Variable.concat([v[0], v[1]], "x"))
-        # TODO: following fail
-        # self.assertLazyAndIdentical(u[:2], Variable.concat([u[0], v[1]], "x"))
-        # self.assertLazyAndIdentical(u[:2], Variable.concat([v[0], u[1]], "x"))
+        self.assertLazyAndIdentical(u[:2], Variable.concat([u[0], v[1]], "x"))
+        self.assertLazyAndIdentical(u[:2], Variable.concat([v[0], u[1]], "x"))
+        # TODO: positions concat requires cubed fancy-indexing reordering (not yet supported)
         # self.assertLazyAndIdentical(
         #     u[:3], Variable.concat([v[[0, 2]], v[[1]]], "x", positions=[[0, 2], [1]])
         # )
