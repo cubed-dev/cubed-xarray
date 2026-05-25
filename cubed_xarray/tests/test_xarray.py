@@ -371,7 +371,6 @@ class TestDataArrayAndDataset(CubedTestCase):
             actual = v.rolling(x=2).mean()
         self.assertLazyAndAllClose(expected, actual)
 
-    @pytest.mark.xfail(reason="failure in cubed")
     @pytest.mark.parametrize("func", ["first", "last"])
     def test_groupby_first_last(self, func):
         method = operator.methodcaller(func)
