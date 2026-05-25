@@ -359,7 +359,6 @@ class TestDataArrayAndDataset(CubedTestCase):
             actual = v.groupby("x").mean(...)
         self.assertLazyAndAllClose(expected, actual)
 
-    @pytest.mark.xfail(reason="needs cubed.lib.stride_tricks.sliding_window_view")
     def test_rolling(self):
         u = self.eager_array
         v = self.lazy_array
