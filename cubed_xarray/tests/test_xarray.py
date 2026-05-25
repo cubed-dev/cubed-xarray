@@ -15,6 +15,7 @@ import pytest
 import xarray as xr
 from cubed import raise_if_computes as raise_if_cubed_computes
 from xarray import DataArray, Dataset, Variable
+from xarray.core import duck_array_ops
 from xarray.tests import (
     assert_allclose,
     assert_array_equal,
@@ -132,7 +133,7 @@ class TestVariable(CubedTestCase):
         u = self.eager_var
         v = self.lazy_var
         self.assertLazyAndIdentical(u.roll(x=2), v.roll(x=2))
-        # assert v.data.chunks == v.roll(x=1).data.chunks  # TODO: fails
+        assert v.data.chunks == v.roll(x=1).data.chunks
 
     def test_unary_op(self):
         u = self.eager_var
@@ -146,7 +147,7 @@ class TestVariable(CubedTestCase):
         v = self.lazy_var
         self.assertLazyAndIdentical(2 * u, 2 * v)
         self.assertLazyAndIdentical(u + u, v + v)
-        # self.assertLazyAndIdentical(u[0] + u, v[0] + v)  # TODO: fails
+        self.assertLazyAndIdentical(u[0] + u, v[0] + v)
 
     def test_binary_op_bitshift(self) -> None:
         # bit shifts only work on ints so we need to generate
@@ -185,7 +186,11 @@ class TestVariable(CubedTestCase):
         u = self.eager_var
         v = self.lazy_var
         self.assertLazyAndAllClose(u.mean(), v.mean())
-        # TODO: other reduce functions need work
+        self.assertLazyAndAllClose((u > 1).any(), (v > 1).any())
+        self.assertLazyAndAllClose((u < 1).all("x"), (v < 1).all("x"))
+        with raise_if_cubed_computes():
+            v.reduce(duck_array_ops.mean)
+        # TODO: std, argmax, argmin compute eagerly (not lazy) in cubed
         # self.assertLazyAndAllClose(u.std(), v.std())
         # with raise_if_cubed_computes():
         #     actual = v.argmax(dim="x")
@@ -193,14 +198,11 @@ class TestVariable(CubedTestCase):
         # with raise_if_cubed_computes():
         #     actual = v.argmin(dim="x")
         # self.assertLazyAndAllClose(u.argmin(dim="x"), actual)
-        # self.assertLazyAndAllClose((u > 1).any(), (v > 1).any())
-        # self.assertLazyAndAllClose((u < 1).all("x"), (v < 1).all("x"))
+        # TODO: median no longer raises NotImplementedError in xarray
         # with pytest.raises(NotImplementedError, match=r"only works along an axis"):
         #     v.median()
         # with pytest.raises(NotImplementedError, match=r"only works along an axis"):
         #     v.median(v.dims)
-        # with raise_if_cubed_computes():
-        #     v.reduce(duck_array_ops.mean)
 
     def test_missing_values(self):
         values = np.array([0, 1, np.nan, 3])
@@ -210,7 +212,7 @@ class TestVariable(CubedTestCase):
         lazy_var = Variable("x", data)
         self.assertLazyAndIdentical(eager_var, lazy_var.fillna(lazy_var))
         self.assertLazyAndIdentical(Variable("x", range(4)), lazy_var.fillna(2))
-        # self.assertLazyAndIdentical(eager_var.count(), lazy_var.count())  # TODO: doesn't use array API
+        self.assertLazyAndIdentical(eager_var.count(), lazy_var.count())
 
     def test_concat(self):
         u = self.eager_var
@@ -423,7 +425,6 @@ class TestDataArrayAndDataset(CubedTestCase):
         v = self.lazy_array
         self.assertLazyAndAllClose(np.sin(u), np.sin(v))
 
-    @pytest.mark.xfail(reason="failure in cubed")
     def test_where_dispatching(self):
         a = np.arange(10)
         b = a > 3
@@ -665,16 +666,15 @@ def test_unify_chunks(map_ds):
     assert out_a.chunks == ((4, 4, 2), (5, 5, 5, 5))
     assert out_b.chunks == expected_chunks
 
-    # TODO: following fails
-    # # Test unordered dims
-    # da = ds_copy["cxy"]
-    # out_a, out_b = xr.unify_chunks(da.chunk({"x": -1}), da.T.chunk({"y": -1}))
-    # assert out_a.chunks == ((4, 4, 2), (5, 5, 5, 5))
-    # assert out_b.chunks == ((5, 5, 5, 5), (4, 4, 2))
+    # Test unordered dims
+    da = ds_copy["cxy"]
+    out_a, out_b = xr.unify_chunks(da.chunk({"x": -1}), da.T.chunk({"y": -1}))
+    assert out_a.chunks == ((4, 4, 2), (10, 10))
+    assert out_b.chunks == ((10, 10), (4, 4, 2))
 
-    # # Test mismatch
-    # with pytest.raises(ValueError, match=r"Dimension 'x' size mismatch: 10 != 2"):
-    #     xr.unify_chunks(da, da.isel(x=slice(2)))
+    # Test mismatch
+    with pytest.raises(ValueError, match=r"Dimension 'x' size mismatch: 10 != 2"):
+        xr.unify_chunks(da, da.isel(x=slice(2)))
 
 
 @pytest.mark.parametrize("obj", [make_ds(), make_da()])
