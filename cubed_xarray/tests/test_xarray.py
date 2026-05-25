@@ -232,13 +232,11 @@ class TestVariable(CubedTestCase):
         with pytest.raises(AttributeError):
             v[0].item()
 
-    @pytest.mark.xfail(reason="np ufuncs don't delegate to cubed")
     def test_univariate_ufunc(self):
         u = self.eager_var
         v = self.lazy_var
         self.assertLazyAndAllClose(np.sin(u), np.sin(v))
 
-    @pytest.mark.xfail(reason="np ufuncs don't delegate to cubed")
     def test_bivariate_ufunc(self):
         u = self.eager_var
         v = self.lazy_var
@@ -417,7 +415,6 @@ class TestDataArrayAndDataset(CubedTestCase):
         actual = duplicate_and_merge(self.lazy_array)
         self.assertLazyAndEqual(expected, actual)
 
-    @pytest.mark.xfail(reason="np ufuncs don't delegate to cubed")
     def test_ufuncs(self):
         u = self.eager_array
         v = self.lazy_array
@@ -667,8 +664,8 @@ def test_unify_chunks(map_ds):
     # Test unordered dims
     da = ds_copy["cxy"]
     out_a, out_b = xr.unify_chunks(da.chunk({"x": -1}), da.T.chunk({"y": -1}))
-    assert out_a.chunks == ((4, 4, 2), (10, 10))
-    assert out_b.chunks == ((10, 10), (4, 4, 2))
+    assert out_a.chunks == ((4, 4, 2), (5, 5, 5, 5))
+    assert out_b.chunks == ((5, 5, 5, 5), (4, 4, 2))
 
     # Test mismatch
     with pytest.raises(ValueError, match=r"Dimension 'x' size mismatch: 10 != 2"):
