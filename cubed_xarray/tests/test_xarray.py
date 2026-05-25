@@ -446,7 +446,6 @@ class TestDataArrayAndDataset(CubedTestCase):
         assert stacked.data.chunks == expected.data.chunks
         self.assertLazyAndEqual(expected, stacked)
 
-    @pytest.mark.xfail(reason="relies on np.einsum which is not in cubed")
     def test_dot(self):
         eager = self.eager_array.dot(self.eager_array[0])
         lazy = self.lazy_array.dot(self.lazy_array[0])
