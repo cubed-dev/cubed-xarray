@@ -121,7 +121,6 @@ class TestVariable(CubedTestCase):
         v = self.lazy_var
         self.assertLazyAndIdentical(u.T, v.T)
 
-    @pytest.mark.xfail(reason="needs pad mode='constant_values' in cubed")
     def test_shift(self):
         u = self.eager_var
         v = self.lazy_var
@@ -362,7 +361,7 @@ class TestDataArrayAndDataset(CubedTestCase):
             actual = v.groupby("x").mean(...)
         self.assertLazyAndAllClose(expected, actual)
 
-    @pytest.mark.xfail(reason="needs pad mode='constant_values' in cubed")
+    @pytest.mark.xfail(reason="needs cubed.lib.stride_tricks.sliding_window_view")
     def test_rolling(self):
         u = self.eager_array
         v = self.lazy_array
