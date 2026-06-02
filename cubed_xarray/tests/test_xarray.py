@@ -196,9 +196,9 @@ class TestVariable(CubedTestCase):
         with raise_if_cubed_computes():
             actual = v.argmin(dim="x")
         self.assertLazyAndAllClose(u.argmin(dim="x"), actual)
-        with pytest.raises(NotImplementedError, match=r"median is not supported"):
+        with pytest.raises(NotImplementedError, match=r"only works along an axis"):
             v.median()
-        with pytest.raises(NotImplementedError, match=r"median is not supported"):
+        with pytest.raises(NotImplementedError, match=r"only works along an axis"):
             v.median(v.dims)
 
     def test_missing_values(self):
