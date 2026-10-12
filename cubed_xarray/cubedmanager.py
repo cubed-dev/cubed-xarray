@@ -225,7 +225,6 @@ class DataArrayAccessor:
         format=None,
         optimize_graph=True,
         optimize_function=None,
-        show_hidden=False,
     ):
         import cubed
 
@@ -235,7 +234,6 @@ class DataArrayAccessor:
             format=format,
             optimize_graph=optimize_graph,
             optimize_function=optimize_function,
-            show_hidden=show_hidden,
         )
 
 
@@ -250,7 +248,6 @@ class DatasetAccessor:
         format=None,
         optimize_graph=True,
         optimize_function=None,
-        show_hidden=False,
     ):
         import cubed
 
@@ -260,5 +257,4 @@ class DatasetAccessor:
             format=format,
             optimize_graph=optimize_graph,
             optimize_function=optimize_function,
-            show_hidden=show_hidden,
         )
